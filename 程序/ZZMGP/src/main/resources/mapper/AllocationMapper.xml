@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.xaut.zzmgp.dao.AllocationDao">
+
+	<select id="findOneAllocation" parameterType="com.xaut.zzmgp.entity.WhereOfAllocation" resultType="com.xaut.zzmgp.entity.Allocation">
+		select allocation_id,allocation_name,product_id,num,remainder
+		from area a join frame f on a.area_id=f.area_id join allocation al on f.frame_id=al.frame_id
+		<where>
+			rownum=1 and kind=#{kind}
+			<if test="product_id!=null">and product_id=#{product_id} and remainder&gt;0</if>
+			<if test="product_id==null">and product_id is null</if>
+		</where>
+	</select>
+	
+	<update id="update" parameterType="com.xaut.zzmgp.entity.Allocation">
+		UPDATE allocation
+		<set>
+			num=#{num},remainder=#{remainder}
+			<if test="product_id==null">,product_id=null</if>
+			<if test="product_id!=null">,product_id=#{product_id}</if>
+		</set>
+		WHERE allocation_id=#{allocation_id}
+	</update>
+	
+	<select id="findAllocations" parameterType="com.xaut.zzmgp.entity.WhereOfAllocation" resultType="com.xaut.zzmgp.entity.Allocation">
+		select *
+		from (select rownum r,t.* from (select allocation_name,product_id,product.name product_name,num,remainder
+										from allocation left outer join product on allocation.product_id=product.id
+										<where>
+											<if test="area_id!=null"><if test="frame_id==null">allocation_id in (select allocation_id from area a join frame f on a.area_id=f.area_id join allocation al on f.frame_id=al.frame_id where a.area_id=#{area_id})</if></if>
+											<if test="frame_id!=null">allocation_id in (select allocation_id from frame f join allocation al on f.frame_id=al.frame_id where f.frame_id=#{frame_id})</if>
+										</where>
+										order by allocation_id) t
+				where rownum&lt;=#{page}*#{size})
+		where r&gt;(#{page}-1)*#{size}
+	</select>
+	
+	<select id="findRows" parameterType="com.xaut.zzmgp.entity.WhereOfAllocation" resultType="int">
+		select count(allocation_id) from allocation
+		<where>
+			<if test="area_id!=null"><if test="frame_id==null">allocation_id in (select allocation_id from area a join frame f on a.area_id=f.area_id join allocation al on f.frame_id=al.frame_id where a.area_id=#{area_id})</if></if>
+			<if test="frame_id!=null">allocation_id in (select allocation_id from frame f join allocation al on f.frame_id=al.frame_id where f.frame_id=#{frame_id})</if>
+		</where>
+	</select>
+	<select id="findAllocationsOfNotPage" parameterType="com.xaut.zzmgp.entity.WhereOfAllocation" resultType="com.xaut.zzmgp.entity.Allocation">
+		select allocation_name,product_id,product.name product_name,num,remainder
+		from allocation left outer join product on allocation.product_id=product.id
+		<where>
+			<if test="area_id!=null"><if test="frame_id==null">allocation_id in (select allocation_id from area a join frame f on a.area_id=f.area_id join allocation al on f.frame_id=al.frame_id where a.area_id=#{area_id})</if></if>
+			<if test="frame_id!=null">allocation_id in (select allocation_id from frame f join allocation al on f.frame_id=al.frame_id where f.frame_id=#{frame_id})</if>
+		</where>
+		order by allocation_id
+	</select>
+	<select id="findAllArea" resultType="com.xaut.zzmgp.entity.Area">
+		select * from area
+	</select>
+	<select id="findFrameByAreaId" parameterType="int" resultType="com.xaut.zzmgp.entity.Frame">
+		select * from frame where area_id=#{id}
+	</select>
+</mapper>

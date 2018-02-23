@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//src/main/java/com/xaut/zzmgp/controller/AndroidController.java=UTF-8
+encoding//src/main/java/com/xaut/zzmgp/controller/WebController.java=UTF-8
+encoding//src/main/java/com/xaut/zzmgp/entity/JsonResult.java=UTF-8
+encoding//src/main/java/com/xaut/zzmgp/entity/Product.java=UTF-8
+encoding//src/main/java/com/xaut/zzmgp/service/impl/AdminServiceImpl.java=UTF-8
+encoding//src/main/java/com/xaut/zzmgp/service/impl/ProductServiceImpl.java=UTF-8
+encoding//src/main/webapp/web/styles/global.css=UTF-8
+encoding//src/main/webapp/web/styles/global_color.css=UTF-8
+encoding//src/test/java/test/AllocationDaoTest.java=UTF-8

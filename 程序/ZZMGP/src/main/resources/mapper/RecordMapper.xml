@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.xaut.zzmgp.dao.RecordDao">
+	<insert id="insertRecord" parameterType="com.xaut.zzmgp.entity.Record">
+		<selectKey order="BEFORE" resultType="int" keyProperty="id">
+			select seq_record_id.nextval from dual
+		</selectKey>
+		INSERT INTO record
+		VALUES(#{id},#{kind},#{product_id},#{admin_id},#{num},#{info},#{oname},sysdate)
+	</insert>
+	<insert id="insertApply" parameterType="com.xaut.zzmgp.entity.Record">
+		<selectKey order="BEFORE" resultType="int" keyProperty="id">
+			select seq_apply_id.nextval from dual
+		</selectKey>
+		INSERT INTO apply
+		VALUES(#{id},#{kind},#{product_id},#{admin_id},#{num},#{oname},sysdate,0)
+	</insert>
+	<select id="findNumForIn" resultType="int">
+		select count(*)
+		from apply
+		where kind=2 and status=0
+	</select>
+	<select id="findNumForOut" resultType="int">
+		select count(*)
+		from apply
+		where kind=3 and status=0
+	</select>
+	
+	<update id="updateApplyOfAgree" parameterType="int">
+		update apply
+		set status=1
+		where id=#{id}
+	</update>
+	
+	<update id="updateApplyOfRefuse" parameterType="int">
+		update apply
+		set status=2
+		where id=#{id}
+	</update>
+	
+	<select id="findApplyById" parameterType="int" resultType="com.xaut.zzmgp.entity.Apply">
+		select *
+		from apply
+		where id=#{id}
+	</select>
+	
+	<select id="findApplys" parameterType="com.xaut.zzmgp.entity.WhereOfRecord" resultType="com.xaut.zzmgp.entity.Apply">
+		select *
+		from (select rownum r,t.* from (select r.id id,r.kind kind,people,product_id,p.name product_name,admin_id,a.name admin_name,r.num num,oname,r.enroll enroll,r.status status
+										from apply r join product p on r.product_id=p.id
+													  join admin a on r.admin_id=a.id
+										<where>
+											<if test="kind!=null">r.kind=#{kind}</if>
+											<if test="product_id!=null">and product_id=#{product_id}</if>
+											<if test="admin_id!=null">and admin_id=#{admin_id}</if>
+										</where>
+										order by status) t
+				where rownum&lt;=#{page}*#{size})
+		where r&gt;(#{page}-1)*#{size}
+	</select>
+	
+	<select id="findApplysRows" parameterType="com.xaut.zzmgp.entity.WhereOfRecord" resultType="int">
+		select count(id) from apply
+		<where>
+			<if test="kind!=null">kind=#{kind}</if>
+			<if test="product_id!=null">and product_id=#{product_id}</if>
+			<if test="admin_id!=null">and admin_id=#{admin_id}</if>
+		</where>
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="com.xaut.zzmgp.entity.Record">
+		select r.id id,r.kind kind,product_id,p.name product_name,people,admin_id,a.name admin_name,r.num num,info,oname,r.enroll enroll
+		from record r join product p on r.product_id=p.id
+					  join admin a on r.admin_id=a.id
+		where r.id=#{id}
+	</select>
+	<select id="findAllRecords" resultType="com.xaut.zzmgp.entity.Record">
+		select r.id id,r.kind kind,product_id,p.name product_name,people,admin_id,a.name admin_name,r.num num,info,oname,r.enroll enroll
+		from record r join product p on r.product_id=p.id
+					  join admin a on r.admin_id=a.id
+	</select>
+	
+	<select id="findRecords" parameterType="com.xaut.zzmgp.entity.WhereOfRecord" resultType="com.xaut.zzmgp.entity.Record">
+		select *
+		from (select rownum r,t.* from (select r.id id,r.kind kind,people,product_id,p.name product_name,admin_id,info,a.name admin_name,r.num num,oname,r.enroll enroll
+										from record r join product p on r.product_id=p.id
+													  join admin a on r.admin_id=a.id
+										<where>
+											<if test="kind!=null">r.kind=#{kind}</if>
+											<if test="product_id!=null">and product_id=#{product_id}</if>
+											<if test="admin_id!=null">and admin_id=#{admin_id}</if>
+										</where>
+										order by r.enroll) t
+				where rownum&lt;=#{page}*#{size})
+		where r&gt;(#{page}-1)*#{size}
+	</select>
+
+	<select id="findRows" parameterType="com.xaut.zzmgp.entity.WhereOfRecord" resultType="int">
+		select count(id) from record
+			<where>
+				<if test="kind!=null">kind=#{kind}</if>
+				<if test="product_id!=null">and product_id=#{product_id}</if>
+				<if test="admin_id!=null">and admin_id=#{admin_id}</if>
+			</where>
+	</select>
+</mapper>

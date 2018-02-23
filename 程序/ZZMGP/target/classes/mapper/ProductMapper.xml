@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.xaut.zzmgp.dao.ProductDao">
+	<resultMap type="com.xaut.zzmgp.entity.Product" id="productMap">
+		<id property="id" column="id"/>
+		<result property="kind" column="kind"/>
+		<result property="name" column="name"/>
+		<result property="norm" column="norm"/>
+		<result property="people" column="people"/>
+		<result property="enroll" column="enroll"/>
+		<collection property="allocations" javaType="java.util.List" ofType="com.xaut.zzmgp.entity.Allocation">
+			<id property="allocation_id" column="allocation_id"/>		
+			<result property="allocation_name" column="allocation_name"/>
+			<result property="product_id" column="product_id"/>
+			<result property="num" column="num"/>
+			<result property="remainder" column="remainder"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findById" parameterType="int" resultMap="productMap">
+		SELECT *
+		FROM product p join allocation a on p.id=a.product_id
+		WHERE p.id=#{id}
+	</select>
+	
+	<select id="findAllProducts" resultMap="productMap">
+		SELECT *
+		FROM product p join allocation a on p.id=a.product_id
+	</select>
+	
+	<select id="findProducts" parameterType="com.xaut.zzmgp.entity.WhereOfProduct" resultMap="productMap">
+	select *	
+	from(select * from (select rownum r,t.* from (SELECT * FROM product
+												<where>
+													<if test="name!=null">and name like #{likeName}</if>
+													<if test="norm!=null">and norm like #{likeNorm}</if>
+													<if test="begin!=null">and enroll&gt;#{timeBegin}</if>
+													<if test="end!=null">and enroll&lt;#{timeEnd}</if>
+												</where>
+												<if test="kind==2">order by people</if>
+												<if test="kind==3">order by enroll</if>) t 
+			where rownum&lt;=#{page}*#{size})
+		where r&gt;(#{page}-1)*#{size}) p join allocation a on p.id=a.product_id
+	</select>
+	
+	<select id="findRows" parameterType="com.xaut.zzmgp.entity.WhereOfProduct" resultType="int">
+		select count(id) from product
+		<where>
+			<if test="name!=null">and name like #{likeName}</if>
+			<if test="norm!=null">and norm like #{likeNorm}</if>
+			<if test="begin!=null">and enroll&gt;#{timeBegin}</if>
+			<if test="end!=null">and enroll&lt;#{timeEnd}</if>
+		</where>
+	</select>
+
+	<insert id="saveProduct" parameterType="com.xaut.zzmgp.entity.Product">
+		<selectKey order="BEFORE" resultType="int" keyProperty="id">
+			select seq_product_id.nextval from dual
+		</selectKey>
+		INSERT INTO product
+		VALUES(#{id},#{kind},#{name},#{norm},#{people},sysdate)
+	</insert>
+</mapper>

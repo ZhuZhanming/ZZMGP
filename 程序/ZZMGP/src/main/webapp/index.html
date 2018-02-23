@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>印品仓库管理系统</title>
+<script src="web/scripts/basevalue.js"></script>
+<script src="web/scripts/jquery-1.4.3.js"></script>
+<script>
+	$(function(){
+		$("#toLogin").click(function(){
+			console.log(1);
+			location.href= path+"/toLogin.do";
+		});
+		$("#downApp").href= path + "/downApp.do"
+	});
+</script>
+</head>
+<body>
+<h1>欢迎使用印品仓库管理系统</h1>
+<input type="button" id="toLogin" value="去登录">
+<input type="button" id="downApp" value="下载APP">
+<img src="web/images/QR_code.png">
+</body>
+</html>

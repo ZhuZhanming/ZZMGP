@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_index"
+            android:icon="@mipmap/nav_index"
+            android:title="主页"/>
+        <item
+            android:id="@+id/nav_admin"
+            android:icon="@mipmap/nav_admin"
+            android:title="管理员查询"/>
+        <item
+            android:id="@+id/nav_record"
+            android:icon="@mipmap/nav_admin"
+            android:title="记录查询"/>
+        <item
+            android:id="@+id/nav_product"
+            android:icon="@mipmap/nav_product"
+            android:title="印刷品查询"/>
+        <item
+            android:id="@+id/nav_in"
+            android:icon="@mipmap/nav_in"
+            android:title="入库申请"/>
+        <item
+            android:id="@+id/nav_out"
+            android:icon="@mipmap/nav_out"
+            android:title="出库申请"/>
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@mipmap/nav_logout"
+            android:title="注销"/>
+    </group>
+</menu>

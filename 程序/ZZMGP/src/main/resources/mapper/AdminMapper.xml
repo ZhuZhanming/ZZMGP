@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.xaut.zzmgp.dao.AdminDao">
+
+	<select id="findVisitor" resultType="int">
+		select count(*) from admin where power=3
+	</select>
+
+	<select id="findByCode" parameterType="java.lang.String" resultType="com.xaut.zzmgp.entity.Admin">
+		SELECT * FROM admin WHERE code=#{code}
+	</select>
+	
+	<insert id="save" parameterType="com.xaut.zzmgp.entity.Admin">
+		INSERT INTO admin
+		VALUES(seq_admin_id.nextval,#{name},#{code},#{password},3,sysdate)
+	</insert>
+	
+	
+	
+	<update id="update" parameterType="com.xaut.zzmgp.entity.Admin">
+		UPDATE admin
+		<set>
+			<if test="name!=null">name=#{name},</if>
+			<if test="password!=null">password=#{password},</if>
+			<if test="power!=null">power=#{power}</if>
+		</set>
+		WHERE code=#{code}
+	</update>
+	<select id="findAllAdmins" resultType="com.xaut.zzmgp.entity.Admin">
+		select *
+		from admin
+		where power&lt;&gt;0
+	</select>
+	<select id="findAdmins" parameterType="com.xaut.zzmgp.entity.WhereOfAdmin" resultType="com.xaut.zzmgp.entity.Admin">
+		select id,name,code,password,power,enroll
+		from (select rownum r,t.* from (select * from admin
+			<where>
+				power&lt;&gt;0
+				<if test="power!=null">and power=#{power}</if>
+				<if test="name!=null">and name like #{likeName}</if>
+			</where>) t 
+			where rownum&lt;=#{page}*#{size})
+		where r&gt;(#{page}-1)*#{size}
+	</select>
+	
+	<select id="findRows" parameterType="com.xaut.zzmgp.entity.WhereOfAdmin" resultType="int">
+		select count(id) from admin
+		<where>
+			power&lt;&gt;0
+			<if test="power!=null">and power=#{power}</if>
+			<if test="name!=null">and name like #{likeName}</if>
+		</where>
+	</select>
+	
+	<delete id="deleteAdmin" parameterType="string">
+		delete from admin where code=#{code}
+	</delete>
+</mapper>
